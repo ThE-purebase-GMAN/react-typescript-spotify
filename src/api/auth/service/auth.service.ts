@@ -23,7 +23,7 @@ const scope = [
   "user-library-read",
   "streaming"
 ].join(" ");
-const redirectUrl = "http://localhost:5173/";
+const redirectUrl = import.meta.env.VITE_REDIRECT_URI || "http://localhost:5173/";
 const tokenEndpoint = "https://accounts.spotify.com/api/token";
 
 export async function redirectToSpotifyAuthorize(): Promise<void> {
