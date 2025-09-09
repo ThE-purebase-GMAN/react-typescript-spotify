@@ -20,7 +20,7 @@ export class SearchService {
       include_external?: 'audio';
     }
   ): Promise<SearchResult> {
-    const params: any = {
+    const params: Record<string, string | number> = {
       q: query,
       type: types.join(','),
       ...options

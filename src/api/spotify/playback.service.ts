@@ -2,7 +2,8 @@ import { SpotifyApiClient } from './base.service';
 import { 
   Device,
   PlaybackState,
-  CurrentlyPlaying
+  CurrentlyPlaying,
+  Track
 } from '../../data-objects/interface';
 
 export class PlaybackService {
@@ -14,14 +15,15 @@ export class PlaybackService {
    * @param additionalTypes A comma-separated list of item types that your client supports.
    */
   async getCurrentPlayback(market?: string, additionalTypes?: string): Promise<PlaybackState | null> {
-    const params: any = {};
+    const params: Record<string, string> = {};
     if (market) params.market = market;
     if (additionalTypes) params.additional_types = additionalTypes;
     
     try {
       return await this.apiClient.get<PlaybackState>('/me/player', params);
-    } catch (error: any) {
-      if (error?.response?.status === 204) {
+    } catch (error: unknown) {
+      if (error && typeof error === 'object' && 'response' in error && 
+          (error as { response: { status: number } }).response?.status === 204) {
         return null; // No active device
       }
       throw error;
@@ -53,14 +55,15 @@ export class PlaybackService {
    * @param additionalTypes A comma-separated list of item types that your client supports.
    */
   async getCurrentlyPlaying(market?: string, additionalTypes?: string): Promise<CurrentlyPlaying | null> {
-    const params: any = {};
+    const params: Record<string, string> = {};
     if (market) params.market = market;
     if (additionalTypes) params.additional_types = additionalTypes;
     
     try {
       return await this.apiClient.get<CurrentlyPlaying>('/me/player/currently-playing', params);
-    } catch (error: any) {
-      if (error?.response?.status === 204) {
+    } catch (error: unknown) {
+      if (error && typeof error === 'object' && 'response' in error && 
+          (error as { response: { status: number } }).response?.status === 204) {
         return null; // No track currently playing
       }
       throw error;
@@ -118,7 +121,7 @@ export class PlaybackService {
    * @param deviceId The id of the device this command is targeting.
    */
   async seekToPosition(positionMs: number, deviceId?: string): Promise<void> {
-    const params: any = { position_ms: positionMs };
+    const params: Record<string, string | number> = { position_ms: positionMs };
     if (deviceId) params.device_id = deviceId;
     
     return this.apiClient.put('/me/player/seek', null, { params });
@@ -130,7 +133,7 @@ export class PlaybackService {
    * @param deviceId The id of the device this command is targeting.
    */
   async setRepeatMode(state: 'track' | 'context' | 'off', deviceId?: string): Promise<void> {
-    const params: any = { state };
+    const params: Record<string, string> = { state };
     if (deviceId) params.device_id = deviceId;
     
     return this.apiClient.put('/me/player/repeat', null, { params });
@@ -146,7 +149,7 @@ export class PlaybackService {
       throw new Error('Volume percent must be between 0 and 100');
     }
     
-    const params: any = { volume_percent: volumePercent };
+    const params: Record<string, string | number> = { volume_percent: volumePercent };
     if (deviceId) params.device_id = deviceId;
     
     return this.apiClient.put('/me/player/volume', null, { params });
@@ -158,7 +161,7 @@ export class PlaybackService {
    * @param deviceId The id of the device this command is targeting.
    */
   async toggleShuffle(state: boolean, deviceId?: string): Promise<void> {
-    const params: any = { state };
+    const params: Record<string, string | boolean> = { state };
     if (deviceId) params.device_id = deviceId;
     
     return this.apiClient.put('/me/player/shuffle', null, { params });
@@ -182,7 +185,7 @@ export class PlaybackService {
     };
     total?: number;
     items: Array<{
-      track: any; // Track object
+      track: Track;
       played_at: string;
       context?: {
         type: string;
@@ -199,8 +202,8 @@ export class PlaybackService {
    * Get the list of objects that make up the user's queue.
    */
   async getUserQueue(): Promise<{
-    currently_playing?: any; // Track object
-    queue: any[]; // Array of track objects
+    currently_playing?: Track;
+    queue: Track[];
   }> {
     return this.apiClient.get('/me/player/queue');
   }
@@ -211,7 +214,7 @@ export class PlaybackService {
    * @param deviceId The id of the device this command is targeting.
    */
   async addItemToPlaybackQueue(uri: string, deviceId?: string): Promise<void> {
-    const params: any = { uri };
+    const params: Record<string, string> = { uri };
     if (deviceId) params.device_id = deviceId;
     
     return this.apiClient.post('/me/player/queue', null, { params });

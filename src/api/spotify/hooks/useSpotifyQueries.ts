@@ -182,7 +182,7 @@ export const useArtistAlbums = (artistId: string, includeGroups?: string, limit 
   return useQuery({
     queryKey: ['spotify', 'artist', artistId, 'albums', includeGroups, limit, offset],
     queryFn: () => api.artists.getArtistAlbums(artistId, { 
-      include_groups: includeGroups as any,
+      include_groups: includeGroups as 'album' | 'single' | 'appears_on' | 'compilation',
       limit, 
       offset 
     }),

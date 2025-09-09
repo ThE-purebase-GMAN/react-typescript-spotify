@@ -273,16 +273,16 @@ export interface PaginatedResponse<T> {
 }
 
 // User's saved/library interfaces
-export interface UserSavedAlbums extends PaginatedResponse<SavedAlbum> {}
+export type UserSavedAlbums = PaginatedResponse<SavedAlbum>;
 
 export interface SavedAlbum {
   added_at: string;
   album: Album;
 }
 
-export interface UserSavedTracks extends PaginatedResponse<SavedTrack> {}
+export type UserSavedTracks = PaginatedResponse<SavedTrack>;
 
-export interface UserPlaylists extends PaginatedResponse<Playlist> {}
+export type UserPlaylists = PaginatedResponse<Playlist>;
 
 // Featured and new releases
 export interface FeaturedPlaylists {
@@ -338,4 +338,4 @@ export interface Category {
   name: string;
 }
 
-export interface Categories extends PaginatedResponse<Category> {}
+export type Categories = PaginatedResponse<Category>;
