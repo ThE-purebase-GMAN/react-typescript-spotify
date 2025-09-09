@@ -8,7 +8,7 @@ import { SearchService } from './search.service';
 import { BrowseService } from './browse.service';
 
 export class SpotifyApi {
-  private apiClient: SpotifyApiClient;
+  private readonly apiClient: SpotifyApiClient;
   
   // Service instances
   public artists: ArtistService;

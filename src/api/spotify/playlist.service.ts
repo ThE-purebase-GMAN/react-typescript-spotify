@@ -7,7 +7,7 @@ import {
 } from '../../data-objects/interface';
 
 export class PlaylistService {
-  constructor(private apiClient: SpotifyApiClient) {}
+  constructor(private readonly apiClient: SpotifyApiClient) {}
 
   /**
    * Get a playlist owned by a Spotify user.

@@ -120,6 +120,8 @@ npm run coverage
 - `npm run coverage` - Generate coverage report
 - `npm run lint` - Run ESLint
 
+> **Note**: SonarCloud analysis runs automatically on pull requests. See [SonarCloud Setup Guide](docs/SONARCLOUD_SETUP.md) for configuration instructions.
+
 ## 🛠️ Tech Stack
 
 ### **Frontend**
@@ -149,6 +151,7 @@ npm run coverage
 - **Vitest** - Fast unit testing framework
 - **React Testing Library** - Component testing utilities
 - **ESLint** - Code linting and formatting
+- **SonarCloud** - Code quality analysis and security scanning
 - **Husky & Commitlint** - Git hooks and conventional commits
 
 ## 📁 Project Architecture

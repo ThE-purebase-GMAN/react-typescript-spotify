@@ -4,7 +4,7 @@ import { getValidAccessToken } from '../../utils/tokenUtils';
 const SPOTIFY_BASE_URL = 'https://api.spotify.com/v1';
 
 export class SpotifyApiClient {
-  private api: AxiosInstance;
+  private readonly api: AxiosInstance;
 
   constructor(accessToken: string) {
     this.api = axios.create({
@@ -39,7 +39,7 @@ export class SpotifyApiClient {
           }
         }
         
-        return Promise.reject(error);
+        throw error;
       }
     );
   }
@@ -49,25 +49,25 @@ export class SpotifyApiClient {
   }
 
   // Generic GET method
-  async get<T>(endpoint: string, params?: Record<string, any>): Promise<T> {
+  async get<T>(endpoint: string, params?: Record<string, unknown>): Promise<T> {
     const response = await this.api.get<T>(endpoint, { params });
     return response.data;
   }
 
   // Generic POST method
-  async post<T>(endpoint: string, data?: any, config?: any): Promise<T> {
+  async post<T, D = unknown>(endpoint: string, data?: D, config?: Record<string, unknown>): Promise<T> {
     const response = await this.api.post<T>(endpoint, data, config);
     return response.data;
   }
 
   // Generic PUT method
-  async put<T>(endpoint: string, data?: any, config?: any): Promise<T> {
+  async put<T, D = unknown>(endpoint: string, data?: D, config?: Record<string, unknown>): Promise<T> {
     const response = await this.api.put<T>(endpoint, data, config);
     return response.data;
   }
 
   // Generic DELETE method
-  async delete<T>(endpoint: string, data?: any): Promise<T> {
+  async delete<T, D = unknown>(endpoint: string, data?: D): Promise<T> {
     const config = data ? { data } : {};
     const response = await this.api.delete<T>(endpoint, config);
     return response.data;

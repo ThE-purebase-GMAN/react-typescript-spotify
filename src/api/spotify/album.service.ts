@@ -7,7 +7,7 @@ import {
 } from '../../data-objects/interface';
 
 export class AlbumService {
-  constructor(private apiClient: SpotifyApiClient) {}
+  constructor(private readonly apiClient: SpotifyApiClient) {}
 
   /**
    * Get Spotify catalog information for a single album.

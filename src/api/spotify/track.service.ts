@@ -7,7 +7,7 @@ import {
 } from '../../data-objects/interface';
 
 export class TrackService {
-  constructor(private apiClient: SpotifyApiClient) {}
+  constructor(private readonly apiClient: SpotifyApiClient) {}
 
   /**
    * Get Spotify catalog information for a single track identified by its unique Spotify ID.
@@ -156,7 +156,7 @@ export class TrackService {
       throw new Error('Maximum of 5 seeds allowed in total');
     }
 
-    const params: any = { ...options };
+    const params: Record<string, string | number | undefined> = { ...options } as Record<string, string | number | undefined>;
     
     // Convert arrays to comma-separated strings
     if (options.seed_artists) {

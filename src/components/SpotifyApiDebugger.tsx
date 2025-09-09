@@ -42,7 +42,7 @@ const SpotifyApiDebugger: React.FC = () => {
         return;
       }
 
-      const activeDevice = devices.devices.find((d: any) => d.is_active);
+      const activeDevice = devices.devices.find((d: { is_active: boolean }) => d.is_active);
       console.log('🎵 Active device:', activeDevice);
 
       // Test 2: Try to play/resume

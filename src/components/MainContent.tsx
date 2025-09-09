@@ -1,9 +1,6 @@
 import { useContentStore } from "../stores/useContentStore.ts";
 import SpotifyPlayer from "./SpotifyPlayer.tsx";
 import { useAuth } from "../context/AuthContext.tsx";
-// import { MainContent as MC } from "../data-objects/enum";
-// import Profile from "../pages/Profile.tsx";
-// import Settings from "../pages/Settings.tsx";
 
 const MainContent = () => {
   const { currentContent } = useContentStore();
@@ -26,8 +23,6 @@ const MainContent = () => {
           </div>
         </div>
       )}
-      {/* {currentContent === MC.PROFILE && <Profile />}
-      {currentContent === MC.SETTINGS && <Settings />} */}
     </div>
   );
 };

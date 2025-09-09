@@ -9,7 +9,7 @@ import {
 } from '../../data-objects/interface';
 
 export class BrowseService {
-  constructor(private apiClient: SpotifyApiClient) {}
+  constructor(private readonly apiClient: SpotifyApiClient) {}
 
   /**
    * Get a list of categories used to tag items in Spotify.
