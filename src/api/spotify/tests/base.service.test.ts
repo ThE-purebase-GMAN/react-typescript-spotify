@@ -267,11 +267,13 @@ describe('SpotifyApiClient', () => {
         await errorInterceptor(mockError);
       } catch (error) {
         // The error might still be thrown due to mocking limitations
+        // We only care about testing the token refresh logic, not the actual retry
+        expect(error).toBeInstanceOf(Error);
       }
 
       expect(tokenUtils.getValidAccessToken).toHaveBeenCalled();
-      expect(mockError.config!.headers!['Authorization']).toBe(`Bearer ${newToken}`);
-      expect((mockError.config as any)._retry).toBe(true);
+      expect(mockError.config?.headers?.['Authorization']).toBe(`Bearer ${newToken}`);
+      expect((mockError.config as any)?._retry).toBe(true);
     });
 
     it('should redirect to login when token refresh fails', async () => {

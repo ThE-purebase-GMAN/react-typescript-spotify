@@ -7,7 +7,7 @@ import {
 } from '../../data-objects/interface';
 
 export class PlaybackService {
-  constructor(private apiClient: SpotifyApiClient) {}
+  constructor(private readonly apiClient: SpotifyApiClient) {}
 
   /**
    * Get information about the user's current playback state, including track or episode, progress, and active device.

@@ -7,7 +7,7 @@ import {
 } from '../../data-objects/interface';
 
 export class ArtistService {
-  constructor(private apiClient: SpotifyApiClient) {}
+  constructor(private readonly apiClient: SpotifyApiClient) {}
 
   /**
    * Get Spotify catalog information for a single artist identified by their unique Spotify ID.

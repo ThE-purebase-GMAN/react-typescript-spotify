@@ -65,6 +65,7 @@ interface SpotifyTrack {
   uri: string;
   name: string;
   is_playable: boolean;
+  duration_ms: number;
   album: {
     uri: string;
     name: string;
@@ -93,7 +94,7 @@ export const useSpotifyPlayer = () => {
   const { accessToken } = useAuthToken();
   const [player, setPlayer] = useState<SpotifyPlayer | null>(null);
   const playerRef = useRef<SpotifyPlayer | null>(null);
-  const [is_ready, setIsReady] = useState(false);
+  const [isReady, setIsReady] = useState(false);
   const [playerState, setPlayerState] = useState<PlayerState>({
     is_paused: true,
     is_active: false,
@@ -139,7 +140,7 @@ export const useSpotifyPlayer = () => {
         is_paused: state.paused,
         is_active: !!state.track_window?.current_track,
         position: state.position,
-        duration: state.track_window?.current_track ? 0 : 0, // Duration not directly available
+        duration: state.track_window?.current_track?.duration_ms || 0,
         current_track: state.track_window?.current_track || null,
         device_id: null, // Will be set when ready
       });
@@ -213,7 +214,7 @@ export const useSpotifyPlayer = () => {
 
   return {
     player,
-    is_ready,
+    is_ready: isReady,
     playerState,
     togglePlay,
     nextTrack,

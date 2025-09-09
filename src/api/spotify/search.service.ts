@@ -2,7 +2,7 @@ import { SpotifyApiClient } from './base.service';
 import { SearchResult } from '../../data-objects/interface';
 
 export class SearchService {
-  constructor(private apiClient: SpotifyApiClient) {}
+  constructor(private readonly apiClient: SpotifyApiClient) {}
 
   /**
    * Get Spotify Catalog information about albums, artists, playlists, tracks, shows or episodes that match a keyword string.

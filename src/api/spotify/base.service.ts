@@ -4,7 +4,7 @@ import { getValidAccessToken } from '../../utils/tokenUtils';
 const SPOTIFY_BASE_URL = 'https://api.spotify.com/v1';
 
 export class SpotifyApiClient {
-  private api: AxiosInstance;
+  private readonly api: AxiosInstance;
 
   constructor(accessToken: string) {
     this.api = axios.create({
@@ -39,7 +39,7 @@ export class SpotifyApiClient {
           }
         }
         
-        return Promise.reject(error);
+        throw error;
       }
     );
   }

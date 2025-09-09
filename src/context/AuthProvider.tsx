@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import {
   getToken,
   redirectToSpotifyAuthorize,
@@ -72,8 +72,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     setAccessToken(null);
   };
 
+  const contextValue = useMemo(() => ({
+    accessToken,
+    login,
+    logout,
+    refreshToken
+  }), [accessToken, login, logout, refreshToken]);
+
   return (
-    <AuthContext.Provider value={{ accessToken, login, logout, refreshToken }}>
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );

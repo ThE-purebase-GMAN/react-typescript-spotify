@@ -5,7 +5,6 @@ import MainContent from "../components/MainContent.tsx";
 import ExpandContent from "../components/ExpandContent.tsx";
 import AuthDebugger from "../components/AuthDebugger.tsx";
 import SpotifyApiDebugger from "../components/SpotifyApiDebugger.tsx";
-// import SpotifyApiTest from "../components/SpotifyApiTest.tsx";
 
 const Dashboard = () => {
   return (
