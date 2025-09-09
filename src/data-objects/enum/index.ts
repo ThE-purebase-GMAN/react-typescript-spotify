@@ -5,4 +5,5 @@ export const enum MainContent {
   PLAYLISTS = "Playlists",
   TRACKS = "Tracks",
   BROWSE = "Browse",
+  PLAYER = "Player",
 }

@@ -5,7 +5,24 @@ import {
 
 const authorizationEndpoint = "https://accounts.spotify.com/authorize";
 const clientId = import.meta.env.VITE_CLIENT_ID;
-const scope = "user-read-private user-read-email";
+const scope = [
+  "user-read-private",
+  "user-read-email", 
+  "user-read-playback-state",
+  "user-modify-playback-state",
+  "user-read-currently-playing",
+  "user-read-recently-played",
+  "user-top-read",
+  "playlist-read-private",
+  "playlist-read-collaborative",
+  "playlist-modify-public",
+  "playlist-modify-private",
+  "user-follow-modify",
+  "user-follow-read",
+  "user-library-modify",
+  "user-library-read",
+  "streaming"
+].join(" ");
 const redirectUrl = "http://localhost:5173/";
 const tokenEndpoint = "https://accounts.spotify.com/api/token";
 
@@ -20,7 +37,7 @@ export async function redirectToSpotifyAuthorize(): Promise<void> {
 
   const code_verifier: string = randomString;
   const data: Uint8Array = new TextEncoder().encode(code_verifier);
-  const hashed: ArrayBuffer = await crypto.subtle.digest("SHA-256", data);
+  const hashed: ArrayBuffer = await crypto.subtle.digest("SHA-256", data as BufferSource);
 
   const code_challenge_base64: string = btoa(
     String.fromCharCode(...new Uint8Array(hashed)),
