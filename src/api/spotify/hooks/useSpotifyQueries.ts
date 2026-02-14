@@ -1,23 +1,21 @@
 import { useQuery } from '@tanstack/react-query';
 import { SpotifyApi } from '../index';
-import { useAuthToken } from '../../../hooks/useAuthToken';
+import { useAuth } from '../../../context/AuthContext';
 
 export const useSpotifyApi = (): SpotifyApi => {
-  const { accessToken, isAuthenticated, error } = useAuthToken();
-  
-  if (!isAuthenticated || !accessToken) {
+  const { accessToken } = useAuth();
+
+  if (!accessToken) {
     console.log('❌ No valid access token available');
-    console.log('Authentication status:', { isAuthenticated, hasToken: !!accessToken, error });
-    throw new Error(`Authentication required: ${error || 'No access token'}`);
+    throw new Error('Authentication required: No access token');
   }
-  
-  console.log('✅ Creating Spotify API client with valid token');
+
   return new SpotifyApi(accessToken);
 };
 
 // Search hooks
 export const useSpotifySearch = (
-  query: string, 
+  query: string,
   types: ('album' | 'artist' | 'playlist' | 'track')[] = ['track', 'artist', 'album', 'playlist'],
   options?: {
     market?: string;
@@ -26,54 +24,54 @@ export const useSpotifySearch = (
     enabled?: boolean;
   }
 ) => {
-  const { accessToken, isAuthenticated } = useAuthToken();
-  
+  const { accessToken } = useAuth();
+
   return useQuery({
     queryKey: ['spotify', 'search', query, types, options],
     queryFn: () => {
-      if (!accessToken || !isAuthenticated) {
+      if (!accessToken) {
         throw new Error('Authentication required');
       }
       const api = new SpotifyApi(accessToken);
       return api.search.search(query, types, options);
     },
-    enabled: !!query && !!accessToken && isAuthenticated && (options?.enabled !== false),
+    enabled: !!query && !!accessToken && (options?.enabled !== false),
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 };
 
 // Current user profile
 export const useCurrentUserProfile = () => {
-  const { accessToken, isAuthenticated } = useAuthToken();
-  
+  const { accessToken } = useAuth();
+
   return useQuery({
     queryKey: ['spotify', 'user', 'me'],
     queryFn: () => {
-      if (!accessToken || !isAuthenticated) {
+      if (!accessToken) {
         throw new Error('Authentication required');
       }
       const api = new SpotifyApi(accessToken);
       return api.getCurrentUserProfile();
     },
-    enabled: !!accessToken && isAuthenticated,
+    enabled: !!accessToken,
     staleTime: 10 * 60 * 1000, // 10 minutes
   });
 };
 
 // Current playback state
 export const useCurrentPlayback = () => {
-  const { accessToken, isAuthenticated } = useAuthToken();
-  
+  const { accessToken } = useAuth();
+
   return useQuery({
     queryKey: ['spotify', 'playback', 'current'],
     queryFn: () => {
-      if (!accessToken || !isAuthenticated) {
+      if (!accessToken) {
         throw new Error('Authentication required');
       }
       const api = new SpotifyApi(accessToken);
       return api.playback.getCurrentPlayback();
     },
-    enabled: !!accessToken && isAuthenticated,
+    enabled: !!accessToken,
     refetchInterval: 1000, // Refresh every second for real-time updates
     retry: false,
   });
@@ -81,18 +79,18 @@ export const useCurrentPlayback = () => {
 
 // Currently playing track
 export const useCurrentlyPlaying = () => {
-  const { accessToken, isAuthenticated } = useAuthToken();
-  
+  const { accessToken } = useAuth();
+
   return useQuery({
     queryKey: ['spotify', 'playback', 'currently-playing'],
     queryFn: () => {
-      if (!accessToken || !isAuthenticated) {
+      if (!accessToken) {
         throw new Error('Authentication required');
       }
       const api = new SpotifyApi(accessToken);
       return api.playback.getCurrentlyPlaying();
     },
-    enabled: !!accessToken && isAuthenticated,
+    enabled: !!accessToken,
     refetchInterval: 1000, // Refresh every second
     retry: false,
   });
@@ -100,18 +98,18 @@ export const useCurrentlyPlaying = () => {
 
 // Available devices
 export const useAvailableDevices = () => {
-  const { accessToken, isAuthenticated } = useAuthToken();
-  
+  const { accessToken } = useAuth();
+
   return useQuery({
     queryKey: ['spotify', 'devices'],
     queryFn: () => {
-      if (!accessToken || !isAuthenticated) {
+      if (!accessToken) {
         throw new Error('Authentication required');
       }
       const api = new SpotifyApi(accessToken);
       return api.playback.getAvailableDevices();
     },
-    enabled: !!accessToken && isAuthenticated,
+    enabled: !!accessToken,
     staleTime: 30 * 1000, // 30 seconds
   });
 };
@@ -119,7 +117,7 @@ export const useAvailableDevices = () => {
 // User's playlists
 export const useUserPlaylists = (limit = 50, offset = 0) => {
   const api = useSpotifyApi();
-  
+
   return useQuery({
     queryKey: ['spotify', 'playlists', 'me', limit, offset],
     queryFn: () => api.playlists.getCurrentUserPlaylists({ limit, offset }),
@@ -130,7 +128,7 @@ export const useUserPlaylists = (limit = 50, offset = 0) => {
 // Specific playlist
 export const usePlaylist = (playlistId: string, enabled = true) => {
   const api = useSpotifyApi();
-  
+
   return useQuery({
     queryKey: ['spotify', 'playlist', playlistId],
     queryFn: () => api.playlists.getPlaylist(playlistId),
@@ -142,7 +140,7 @@ export const usePlaylist = (playlistId: string, enabled = true) => {
 // Playlist tracks
 export const usePlaylistTracks = (playlistId: string, limit = 50, offset = 0) => {
   const api = useSpotifyApi();
-  
+
   return useQuery({
     queryKey: ['spotify', 'playlist', playlistId, 'tracks', limit, offset],
     queryFn: () => api.playlists.getPlaylistItems(playlistId, { limit, offset }),
@@ -154,7 +152,7 @@ export const usePlaylistTracks = (playlistId: string, limit = 50, offset = 0) =>
 // Artist details
 export const useArtist = (artistId: string, enabled = true) => {
   const api = useSpotifyApi();
-  
+
   return useQuery({
     queryKey: ['spotify', 'artist', artistId],
     queryFn: () => api.artists.getArtist(artistId),
@@ -166,7 +164,7 @@ export const useArtist = (artistId: string, enabled = true) => {
 // Artist's top tracks
 export const useArtistTopTracks = (artistId: string, market = 'US') => {
   const api = useSpotifyApi();
-  
+
   return useQuery({
     queryKey: ['spotify', 'artist', artistId, 'top-tracks', market],
     queryFn: () => api.artists.getArtistTopTracks(artistId, market),
@@ -178,13 +176,13 @@ export const useArtistTopTracks = (artistId: string, market = 'US') => {
 // Artist's albums
 export const useArtistAlbums = (artistId: string, includeGroups?: string, limit = 20, offset = 0) => {
   const api = useSpotifyApi();
-  
+
   return useQuery({
     queryKey: ['spotify', 'artist', artistId, 'albums', includeGroups, limit, offset],
-    queryFn: () => api.artists.getArtistAlbums(artistId, { 
+    queryFn: () => api.artists.getArtistAlbums(artistId, {
       include_groups: includeGroups as 'album' | 'single' | 'appears_on' | 'compilation',
-      limit, 
-      offset 
+      limit,
+      offset
     }),
     enabled: !!artistId,
     staleTime: 10 * 60 * 1000,
@@ -194,7 +192,7 @@ export const useArtistAlbums = (artistId: string, includeGroups?: string, limit 
 // Album details
 export const useAlbum = (albumId: string, enabled = true) => {
   const api = useSpotifyApi();
-  
+
   return useQuery({
     queryKey: ['spotify', 'album', albumId],
     queryFn: () => api.albums.getAlbum(albumId),
@@ -206,7 +204,7 @@ export const useAlbum = (albumId: string, enabled = true) => {
 // Album tracks
 export const useAlbumTracks = (albumId: string, limit = 50, offset = 0) => {
   const api = useSpotifyApi();
-  
+
   return useQuery({
     queryKey: ['spotify', 'album', albumId, 'tracks', limit, offset],
     queryFn: () => api.albums.getAlbumTracks(albumId, { limit, offset }),
@@ -218,7 +216,7 @@ export const useAlbumTracks = (albumId: string, limit = 50, offset = 0) => {
 // User's saved tracks
 export const useUserSavedTracks = (limit = 50, offset = 0) => {
   const api = useSpotifyApi();
-  
+
   return useQuery({
     queryKey: ['spotify', 'tracks', 'saved', limit, offset],
     queryFn: () => api.tracks.getUserSavedTracks({ limit, offset }),
@@ -229,7 +227,7 @@ export const useUserSavedTracks = (limit = 50, offset = 0) => {
 // User's saved albums
 export const useUserSavedAlbums = (limit = 50, offset = 0) => {
   const api = useSpotifyApi();
-  
+
   return useQuery({
     queryKey: ['spotify', 'albums', 'saved', limit, offset],
     queryFn: () => api.albums.getUserSavedAlbums({ limit, offset }),
@@ -240,7 +238,7 @@ export const useUserSavedAlbums = (limit = 50, offset = 0) => {
 // Featured playlists
 export const useFeaturedPlaylists = (country?: string, limit = 20, offset = 0) => {
   const api = useSpotifyApi();
-  
+
   return useQuery({
     queryKey: ['spotify', 'browse', 'featured-playlists', country, limit, offset],
     queryFn: () => api.browse.getFeaturedPlaylists({ country, limit, offset }),
@@ -251,7 +249,7 @@ export const useFeaturedPlaylists = (country?: string, limit = 20, offset = 0) =
 // New releases
 export const useNewReleases = (country?: string, limit = 20, offset = 0) => {
   const api = useSpotifyApi();
-  
+
   return useQuery({
     queryKey: ['spotify', 'browse', 'new-releases', country, limit, offset],
     queryFn: () => api.browse.getNewReleases({ country, limit, offset }),
@@ -262,7 +260,7 @@ export const useNewReleases = (country?: string, limit = 20, offset = 0) => {
 // Categories
 export const useCategories = (country?: string, limit = 50, offset = 0) => {
   const api = useSpotifyApi();
-  
+
   return useQuery({
     queryKey: ['spotify', 'browse', 'categories', country, limit, offset],
     queryFn: () => api.browse.getCategories({ country, limit, offset }),

@@ -1,12 +1,24 @@
 import { useContentStore } from "../stores/useContentStore.ts";
 import SpotifyPlayer from "./SpotifyPlayer.tsx";
 import { useAuth } from "../context/AuthContext.tsx";
+import PlaylistList from "./PlaylistList.tsx";
+import { MainContent as MainContentEnum } from "../data-objects/enum/index.ts";
 
 const MainContent = () => {
   const { currentContent } = useContentStore();
   const { accessToken } = useAuth();
   console.log('Current content:', currentContent); // Keep for debugging
-  
+
+  const renderContent = () => {
+    switch (currentContent) {
+      case MainContentEnum.PLAYLISTS:
+        return <PlaylistList />;
+      case MainContentEnum.PLAYER:
+      default:
+        return <SpotifyPlayer />;
+    }
+  };
+
   return (
     <div
       data-testid="main-content-element"
@@ -14,7 +26,7 @@ const MainContent = () => {
     >
 
       {accessToken ? (
-        <SpotifyPlayer />
+        renderContent()
       ) : (
         <div className="flex items-center justify-center p-8">
           <div className="text-center">
