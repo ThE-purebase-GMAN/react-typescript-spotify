@@ -1,20 +1,40 @@
-import React, {useState} from 'react';
-import {useCurrentPlayback, useSpotifySearch} from '../api/spotify/hooks/useSpotifyQueries';
-import {useLibraryControls, usePlaybackControls} from '../api/spotify/hooks/useSpotifyMutations';
-import {Artist, Track} from '../data-objects/interface/spotify-interface';
+import React, { useState } from 'react';
+import {
+  useCurrentPlayback,
+  useSpotifySearch,
+  usePlaylistTracks,
+  useUserSavedTracks,
+  usePlaylist
+} from '../api/spotify/hooks/useSpotifyQueries';
+import { useLibraryControls, usePlaybackControls } from '../api/spotify/hooks/useSpotifyMutations';
+import { Artist, Track } from '../data-objects/interface/spotify-interface';
 import DeviceSelector from './DeviceSelector';
 
-const SpotifyPlayer: React.FC = () => {
+interface SpotifyPlayerProps {
+  playlistId?: string;
+  isLikedSongs?: boolean;
+}
+
+const SpotifyPlayer: React.FC<SpotifyPlayerProps> = ({ playlistId, isLikedSongs }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [useWebPlayer] = useState(false);
 
   // Queries - only fetch when using Web API mode
   const { data: currentPlayback, isLoading: isLoadingPlayback } = useCurrentPlayback();
   const { data: searchResults, isLoading: isSearching } = useSpotifySearch(
-    searchQuery, 
-    ['track', 'artist', 'album'], 
+    searchQuery,
+    ['track', 'artist', 'album'],
     { enabled: searchQuery.length > 0 && !useWebPlayer }
   );
+
+  // Playlist Handling
+  const { data: playlist } = usePlaylist(playlistId || '', !!playlistId);
+  const { data: playlistTracks, isLoading: isLoadingPlaylistTracks } = usePlaylistTracks(playlistId || '');
+  const { data: savedTracks, isLoading: isLoadingSavedTracks } = useUserSavedTracks(50);
+
+  const tracksToDisplay = isLikedSongs
+    ? savedTracks?.items.map(item => item.track)
+    : playlistTracks?.items.map(item => item.track);
 
   // Mutations
   const playbackControls = usePlaybackControls();
@@ -23,7 +43,7 @@ const SpotifyPlayer: React.FC = () => {
   const handlePlay = async (trackUri?: string, contextUri?: string) => {
     try {
       console.log('🎵 Attempting to play:', { trackUri, contextUri });
-      
+
       if (trackUri || contextUri) {
         await playbackControls.play.mutateAsync({
           uris: trackUri ? [trackUri] : undefined,
@@ -32,7 +52,7 @@ const SpotifyPlayer: React.FC = () => {
       } else {
         await playbackControls.play.mutateAsync({});
       }
-      
+
       console.log('✅ Play request successful');
     } catch (error: unknown) {
       console.error('❌ Error playing track:', error);
@@ -56,7 +76,7 @@ const SpotifyPlayer: React.FC = () => {
         data: errorObj?.response?.data,
         config: errorObj?.config
       });
-      
+
       // Check for specific error types
       if (errorObj?.response?.status === 500) {
         alert('🔧 Server Error (500)\\n\\nThis could be:\\n• Spotify API temporary issue\\n• Rate limiting\\n• Invalid request data\\n\\nPlease:\\n• Wait a moment and try again\\n• Check browser console for details\\n• Ensure you have an active Spotify device');
@@ -113,8 +133,8 @@ const SpotifyPlayer: React.FC = () => {
       return (
         <div className="bg-gray-800 p-4 rounded-lg flex items-center space-x-4">
           {currentPlayback.item.album?.images?.[0] && (
-            <img 
-              src={currentPlayback.item.album.images[0].url} 
+            <img
+              src={currentPlayback.item.album.images[0].url}
               alt="Album cover"
               className="w-16 h-16 rounded-lg"
             />
@@ -165,8 +185,8 @@ const SpotifyPlayer: React.FC = () => {
             <div key={track.id} className="bg-gray-800 p-3 rounded-lg flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 {track.album?.images?.[0] && (
-                  <img 
-                    src={track.album.images[0].url} 
+                  <img
+                    src={track.album.images[0].url}
                     alt="Album cover"
                     className="w-12 h-12 rounded"
                   />
@@ -209,17 +229,19 @@ const SpotifyPlayer: React.FC = () => {
         <DeviceSelector />
       </div>
 
-      {/* Search */}
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold mb-3">Search Music</h2>
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Search for tracks, artists, albums..."
-          className="w-full p-3 bg-gray-800 border border-gray-700 rounded-lg text-white"
-        />
-      </div>
+      {/* Search - only show if no playlist selected */}
+      {!playlistId && !isLikedSongs && (
+        <div className="mb-6">
+          <h2 className="text-xl font-semibold mb-3">Search Music</h2>
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search for tracks, artists, albums..."
+            className="w-full p-3 bg-gray-800 border border-gray-700 rounded-lg text-white"
+          />
+        </div>
+      )}
 
       {/* Current Playback */}
       <div className="mb-6">
@@ -228,10 +250,64 @@ const SpotifyPlayer: React.FC = () => {
       </div>
 
       {/* Search Results */}
-      {searchQuery && (
+      {searchQuery && !playlistId && !isLikedSongs && (
         <div>
           <h2 className="text-xl font-semibold mb-3">Search Results</h2>
           {renderSearchResults()}
+        </div>
+      )}
+
+      {/* Playlist / Liked Songs Content */}
+      {(playlistId || isLikedSongs) && (
+        <div className="mt-6">
+          <h2 className="text-xl font-semibold mb-3">
+            {isLikedSongs ? 'Liked Songs' : (playlist?.name || 'Playlist Tracks')}
+          </h2>
+          {isLikedSongs && isLoadingSavedTracks && <div>Loading Liked Songs...</div>}
+          {playlistId && isLoadingPlaylistTracks && <div>Loading Playlist Tracks...</div>}
+
+          <div className="space-y-2">
+            {tracksToDisplay?.map((track) => (
+              <div key={track.id + track.uri} className="bg-gray-800 p-3 rounded-lg flex items-center justify-between hover:bg-gray-700 transition">
+                <div className="flex items-center space-x-3 overflow-hidden">
+                  <span className="text-gray-400 w-6 text-center">{track.track_number}</span>
+                  {track.album?.images?.[0] && (
+                    <img
+                      src={track.album.images[0].url}
+                      alt="Album cover"
+                      className="w-10 h-10 rounded shadow"
+                    />
+                  )}
+                  <div className="min-w-0">
+                    <h4 className="font-medium truncate text-white">{track.name}</h4>
+                    <p className="text-sm text-gray-400 truncate">
+                      {track.artists?.map((artist: Artist) => artist.name).join(', ')}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex space-x-2 shrink-0">
+                  <button
+                    onClick={() => handlePlay(track.uri, isLikedSongs ? undefined : playlist?.uri)}
+                    className="p-2 bg-green-600 hover:bg-green-700 rounded-full text-white shadow-lg transform hover:scale-105 transition"
+                    title="Play Track"
+                  >
+                    ▶
+                  </button>
+                  <button
+                    onClick={() => handleSaveTrack(track.id)}
+                    className="p-2 text-gray-400 hover:text-white transition"
+                    title="Save to Liked Songs"
+                  >
+                    ❤️
+                  </button>
+                </div>
+              </div>
+            ))}
+
+            {tracksToDisplay?.length === 0 && (
+              <div className="text-gray-400 p-4 text-center">No tracks found.</div>
+            )}
+          </div>
         </div>
       )}
     </div>
