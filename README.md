@@ -209,10 +209,10 @@ src/
 
 ## 📚 Documentation
 
-- **[IMPLEMENTATION_COMPLETE.md](IMPLEMENTATION_COMPLETE.md)** - Detailed feature overview
-- **[SPOTIFY_API_GUIDE.md](SPOTIFY_API_GUIDE.md)** - Complete API documentation
-- **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)** - Common issues and solutions
-- **[AUTHENTICATION_FIX.md](AUTHENTICATION_FIX.md)** - Authentication debugging guide
+- **[IMPLEMENTATION_COMPLETE.md](docs/IMPLEMENTATION_COMPLETE.md)** - Detailed feature overview
+- **[SPOTIFY_API_GUIDE.md](docs/SPOTIFY_API_GUIDE.md)** - Complete API documentation
+- **[TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md)** - Common issues and solutions
+- **[AUTHENTICATION_FIX.md](docs/AUTHENTICATION_FIX.md)** - Authentication debugging guide
 
 ## 🤝 Contributing
 
@@ -248,7 +248,7 @@ Contributions are welcome! Please read our contributing guidelines and code of c
 - **Playback Not Working**: Ensure Premium account and active device
 - **Token Expired**: Use the built-in auth debugger
 
-See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for detailed solutions.
+See [TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) for detailed solutions.
 
 ## 📄 License
 
