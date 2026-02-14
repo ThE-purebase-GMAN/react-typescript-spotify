@@ -1,16 +1,12 @@
-import React, { useState } from 'react';
-import { 
-  useCurrentPlayback, 
-  useSpotifySearch 
-} from '../api/spotify/hooks/useSpotifyQueries';
-import { usePlaybackControls, useLibraryControls } from '../api/spotify/hooks/useSpotifyMutations';
-import { Artist, Track } from '../data-objects/interface/spotify-interface';
+import React, {useState} from 'react';
+import {useCurrentPlayback, useSpotifySearch} from '../api/spotify/hooks/useSpotifyQueries';
+import {useLibraryControls, usePlaybackControls} from '../api/spotify/hooks/useSpotifyMutations';
+import {Artist, Track} from '../data-objects/interface/spotify-interface';
 import DeviceSelector from './DeviceSelector';
-import WebPlaybackPlayer from './WebPlaybackPlayer';
 
 const SpotifyPlayer: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [useWebPlayer, setUseWebPlayer] = useState(false);
+  const [useWebPlayer] = useState(false);
 
   // Queries - only fetch when using Web API mode
   const { data: currentPlayback, isLoading: isLoadingPlayback } = useCurrentPlayback();
@@ -23,35 +19,6 @@ const SpotifyPlayer: React.FC = () => {
   // Mutations
   const playbackControls = usePlaybackControls();
   const libraryControls = useLibraryControls();
-
-  // Toggle between Web API and Web Playback SDK
-  if (useWebPlayer) {
-    return (
-      <div className="max-w-4xl mx-auto p-6 bg-black min-h-screen text-white">
-        <div className="mb-6 flex items-center justify-between">
-          <h1 className="text-3xl font-bold text-green-400">🎵 Spotify Web Player (SDK)</h1>
-          <button
-            onClick={() => setUseWebPlayer(false)}
-            className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors"
-          >
-            Switch to Web API
-          </button>
-        </div>
-        <WebPlaybackPlayer />
-        
-        {/* Instructions */}
-        <div className="mt-6 p-4 bg-gray-800 rounded-lg">
-          <h3 className="text-lg font-semibold text-green-400 mb-2">Web Playback SDK Player</h3>
-          <ul className="text-sm text-gray-300 space-y-1">
-            <li>• This player runs directly in your browser</li>
-            <li>• No need for external Spotify devices</li>
-            <li>• Premium Spotify account required</li>
-            <li>• Control playback from this interface</li>
-          </ul>
-        </div>
-      </div>
-    );
-  }
 
   const handlePlay = async (trackUri?: string, contextUri?: string) => {
     try {
@@ -236,15 +203,6 @@ const SpotifyPlayer: React.FC = () => {
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-black min-h-screen text-white">
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-green-400">🎵 Spotify Player (Web API)</h1>
-        <button
-          onClick={() => setUseWebPlayer(true)}
-          className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg transition-colors"
-        >
-          Switch to Web Player SDK
-        </button>
-      </div>
 
       {/* Device Management */}
       <div className="mb-8">
@@ -276,18 +234,6 @@ const SpotifyPlayer: React.FC = () => {
           {renderSearchResults()}
         </div>
       )}
-
-      {/* Instructions */}
-      <div className="mt-8 p-4 bg-gray-800 rounded-lg">
-        <h3 className="text-lg font-semibold text-green-400 mb-2">How to Use</h3>
-        <ul className="text-sm text-gray-300 space-y-1">
-          <li>• <strong>Web API Mode:</strong> Requires active Spotify device (mobile, desktop, web)</li>
-          <li>• <strong>Web Player SDK:</strong> Creates a player directly in this browser</li>
-          <li>• Search for music and click play to start playback</li>
-          <li>• Use device selector to choose where music plays</li>
-          <li>• Premium Spotify account required for playback</li>
-        </ul>
-      </div>
     </div>
   );
 };

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useUserPlaylists, useUserSavedTracks } from '../api/spotify/hooks/useSpotifyQueries';
-import { Playlist } from '../data-objects/interface/spotify-interface';
+import { Playlist } from '../data-objects/interface';
 
 const PlaylistList: React.FC = () => {
   const { data: playlists, isLoading: isLoadingPlaylists, error } = useUserPlaylists();
