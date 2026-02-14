@@ -1,11 +1,9 @@
 import NotificationsNoneOutlinedIcon from "@mui/icons-material/NotificationsNoneOutlined";
 import PeopleOutlineOutlinedIcon from "@mui/icons-material/PeopleOutlineOutlined";
 import LaunchIcon from "@mui/icons-material/Launch";
-import { useAuth } from "../../context/AuthContext.tsx";
-import { useProfileQuery } from "../../api/user";
-import { Link } from "react-router-dom";
-import { useContentStore } from "../../stores/useContentStore.ts";
-import { MainContent } from "../../data-objects/enum";
+import {useAuth} from "../../context/AuthContext.tsx";
+import {useProfileQuery} from "../../api/user";
+import {Link} from "react-router-dom";
 
 const AccountBar = () => {
   const { logout, accessToken } = useAuth();
@@ -14,7 +12,6 @@ const AccountBar = () => {
   };
   const { data, isPending } = useProfileQuery(accessToken ?? "");
 
-  const { setCurrentContent } = useContentStore();
   const srcImage = "/assets/images/post_malone.jpg";
   return (
     <div
@@ -54,19 +51,6 @@ const AccountBar = () => {
               Account
               <LaunchIcon />
             </Link>
-          </li>
-          <li>
-            <button onClick={() => setCurrentContent(MainContent.PROFILE)}>
-              Profile
-            </button>
-          </li>
-          <li>
-            <a>Private session</a>
-          </li>
-          <li>
-            <button onClick={() => setCurrentContent(MainContent.SETTINGS)}>
-              Settings
-            </button>
           </li>
           <div className="divider m-0"></div>
           <li>

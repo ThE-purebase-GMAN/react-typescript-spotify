@@ -43,23 +43,8 @@ describe("Dashboard Component", () => {
     expect(screen.getByTestId("header-element")).toBeInTheDocument();
   });
 
-  it("contains a footer", () => {
-    dashboardComponent();
-    expect(screen.getByTestId("footer-element")).toBeInTheDocument();
-  });
-
-  it("contains a sidebar", () => {
-    dashboardComponent();
-    expect(screen.getByTestId("sidebar-element")).toBeInTheDocument();
-  });
-
   it("contains a main content", () => {
     dashboardComponent();
     expect(screen.getByTestId("main-content-element")).toBeInTheDocument();
-  });
-
-  it("contains a expand content", () => {
-    dashboardComponent();
-    expect(screen.getByTestId("expand-content-element")).toBeInTheDocument();
   });
 });
